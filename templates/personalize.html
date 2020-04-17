@@ -1,28 +1,32 @@
+{# TODO: color picker #}
+<!DOCTYPE html>
+<html lang="en-US">
 
-
-{% block head %}
+<head>
+   <!-- <link rel="stylesheet" href="/static/pygments.css">
+    <link rel="stylesheet" href="/static/responsive.css">
+    <link rel="stylesheet" href="/static/bootstrap.css"> -->
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel='stylesheet' href='https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA5-1qAp5owIqrJKNhUJd8hYO99yqKKTCs'>
-    {{ super() }}
-    <style type="text/css">
-        .important { background-color: {{ User.backgroundColor }} }
-        .important { color: {{ User.textColor }} }
-        .important { button-color: {{ User.buttonColor }} }
-        .important { font: {{ User.font }} }
-        .important { theme: {{ User.textColor }} }
-    </style>
-{% endblock %}
+    <!--<link rel='stylesheet' href='https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA5-1qAp5owIqrJKNhUJd8hYO99yqKKTCs'>
+    <link rel="stylesheet" href="/static/colorPicker.css"> -->
 
-{% block title %}{{ page.title }}{% endblock title %}
+    <title>Personalize</title>
+</head>
 
-{% block content %}
+<body style=background-color: {{ backgroundColor }}
+            style=color: {{ textColor }}
+            style=button-color: {{ buttonColor }}
+            style=font-family: {{ font }}
+            style=theme: {{ textColor }}>
+
 <p>
-    Your current settings:
-    Background Color: {{ User.backgoundColor }}
-    Text Color: {{ User.textColor }}
-    Button Color: {{ User.buttonColor }}
-    Font: {{ User.font }}
-    Theme: {{ User.theme }}
+    Hello, {{ name }} <br>
+    Your current settings: <br>
+    Background Color: {{ backgroundColor }} <br>
+    Text Color: {{ textColor }} <br>
+    Button Color: {{ buttonColor }} <br>
+    Font: {{ font }} <br>
+    Theme: {{ theme }} <br>
 </p>
 
 <form class="w3-container" method="post">
@@ -38,14 +42,15 @@
     <label class="w3-text-teal"><b>Button Color</b></label>
     <input class="w3-input w3-border w3-light-grey" id="buttonColor" type="text">
 
-    <label class="w3-text-teal"><b>font</b></label>
+    <label class="w3-text-teal"><b>Font</b></label>
     <input class="w3-input w3-border w3-light-grey" id="font" type="text">
 
-    <label class="w3-text-teal"><b>theme</b></label>
+    <label class="w3-text-teal"><b>Theme</b></label>
     <input class="w3-input w3-border w3-light-grey" id="theme" type="text">
 
     <br><br>
     <input type="submit">
 
 </form>
-{% endblock content %}
+</body>
+</html>

@@ -1,4 +1,3 @@
-# from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import json
 from settings import app
@@ -17,9 +16,12 @@ class User(db.Model):
     theme = db.Column(db.String(80))
 
     def json(self):
-        return {'name': self.name, 'backgroundColor': self.backgroundColor,
-                'textColor': self.textColor, 'buttonColor': self.buttonColor,
-                'font': self.font, 'theme': self.theme}
+        return {'name': self.name,
+                'backgroundColor': self.backgroundColor,
+                'textColor': self.textColor,
+                'buttonColor': self.buttonColor,
+                'font': self.font,
+                'theme': self.theme}
 
     def add_user(_name, _backgroundColor, _textColor,
                  _buttonColor, _font, _theme):
@@ -33,7 +35,7 @@ class User(db.Model):
         return [User.json(user) for user in User.query.all()]
 
     def get_user(_name):
-        return [User.json(User.query.filter_by(name=_name).first())]
+        return User.json(User.query.filter_by(name=_name).first())
 
     def delete_user(_name):
         is_successful = User.query.filter_by(name=_name).delete()

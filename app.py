@@ -1,30 +1,26 @@
-from flask import Flask, request, jsonify, Response, redirect, flash, render_template
-from settings import *
+from flask import request, jsonify, Response, redirect, flash, render_template
 from UserChoicesDb import User
-import json
-# from Riki import *
-users = User.get_all_users()
+from settings import app
 
 
 @app.route('/')  # works
 def helloWorld():
-    return "Hello world"
+    return "Hello, world"
 
 
-@app.route('/personalize/')   # works
+@app.route('/personalize/')  # works
 def getAllUsers():
-#    render_template('personalize.html', users=users)
     return jsonify({'users': User.get_all_users()})
 
 
 @app.route('/personalize/<string:name>')  # works
 def get_users(name):  # get users choices
     return_value = User.get_user(name)
-#    render_template('personalize.html')
+    personalize(return_value)
     return jsonify(return_value)
 
 
-@app.route('/personalize/', methods=['POST'])   # works
+@app.route('/personalize/', methods=['POST'])  # works
 def create_user():  # make new user
     request_data = request.get_json()
     User.add_user(request_data['name'], request_data['backgroundColor'],
@@ -33,11 +29,10 @@ def create_user():  # make new user
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(request_data['name'])
     flash('saved')
-#    render_template('personalize.html')
     return response, redirect("/personalize/" + str(request_data['name']))
 
 
-@app.route('/personalize/<string:name>', methods=['PUT'])   # works
+@app.route('/personalize/<string:name>', methods=['PUT'])  # works
 def replace_user(name):  # replace user choices
     request_data = request.get_json()
     User.replace_user(name, request_data['backgroundColor'],
@@ -46,11 +41,10 @@ def replace_user(name):  # replace user choices
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(name)
     flash('saved')
-#    render_template('personalize.html')
     return response
 
 
-@app.route('/personalize/<string:name>', methods=['PATCH'])    # works
+@app.route('/personalize/<string:name>', methods=['PATCH'])  # works
 def update_user(name):  # update user choices
     request_data = request.get_json()
     if 'name' in request_data:
@@ -69,17 +63,15 @@ def update_user(name):  # update user choices
     response = Response("", status=204)
     response.headers['Location'] = "/personalization/" + str(name)
     flash('saved')
-#    render_template('personalize.html')
     return response
 
 
-@app.route('/personalize/<string:name>', methods=['DELETE'])   # works
+@app.route('/personalize/<string:name>', methods=['DELETE'])  # works
 def delete_user(name):
     if User.delete_user(name):
         response = Response("", 201, mimetype='application/json')
         response.headers['location'] = "/personalize/" + str(name)
         flash('deleted')
-#        render_template('personalize.html')
         return response
     else:
         errormessage = {
@@ -89,6 +81,29 @@ def delete_user(name):
         return response
 
 
+@app.route('/personalize/')
+def personalize(data):
+    print(data)
+    _name = data['name']
+    _backgroundColor = data['backgroundColor']
+    _textColor = data['textColor']
+    _buttonColor = data['buttonColor']
+    _font = data['font']
+    _theme = data['theme']
+    # FIX_ME
+    return render_template('personalize.html',
+                           name=_name,
+                           backgroundColor=_backgroundColor,
+                           textColor=_textColor,
+                           buttonColor=_buttonColor,
+                           font=_font,
+                           theme=_theme)
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
 
 if __name__ == '__main__':
-    app.run(port=80)
+    app.run(port=80, debug=True)
