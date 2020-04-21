@@ -32,7 +32,16 @@ class User(db.Model):
         db.session.commit()
 
     def get_all_users():
+        pass
         return [User.json(user) for user in User.query.all()]
+
+    def get_all_users_names():
+        pass
+        # allUsers = User.get_all_users()
+        # print(allUsers)
+        # for user in allUsers:
+        #     User.json(User.query.filter_by(name=user['name']))
+        #     return user['name']
 
     def get_user(_name):
         return User.json(User.query.filter_by(name=_name).first())

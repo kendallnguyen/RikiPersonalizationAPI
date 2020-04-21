@@ -2,37 +2,58 @@ from flask import request, jsonify, Response, redirect, flash, render_template
 from UserChoicesDb import User
 from settings import app
 
+app.config['SECRET_KEY'] = 'meow'
+
 
 @app.route('/')  # works
 def helloWorld():
-    return "Hello, world"
+    return "Hello, world. Go to this webpage /personalize/"
 
 
-@app.route('/personalize/')  # works
+def getDefaultUser():
+    name = "default"
+    return User.get_user(name)
+
+
+@app.route('/personalize/allusers')  # works
 def getAllUsers():
+    print({'users': User.get_all_users()})
     return jsonify({'users': User.get_all_users()})
 
 
-@app.route('/personalize/<string:name>')  # works
+@app.route('/personalize/')
+def home():
+    # getAllUsersNames()
+    return personalize("default")
+
+
+@app.route('/personalize/<string:name>')
 def get_users(name):  # get users choices
     return_value = User.get_user(name)
-    personalize(return_value)
-    return jsonify(return_value)
+    print(return_value)
+    return personalize(return_value)
 
 
-@app.route('/personalize/', methods=['POST'])  # works
+@app.route('/personalize/create')
+def load_create_page():
+    return personalize("create")
+
+
+@app.route('/personalize/create', methods=['POST'])
 def create_user():  # make new user
     request_data = request.get_json()
+    print(request_data)
     User.add_user(request_data['name'], request_data['backgroundColor'],
                   request_data['textColor'], request_data['buttonColor'],
                   request_data['font'], request_data['theme'])
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(request_data['name'])
     flash('saved')
-    return response, redirect("/personalize/" + str(request_data['name']))
+    return response, personalize(request_data),  # redirect(
+    # "/personalize/" + str(request_data['name']))  # , personalize(getDefaultUser())
 
 
-@app.route('/personalize/<string:name>', methods=['PUT'])  # works
+@app.route('/personalize/<string:name>', methods=['PUT'])
 def replace_user(name):  # replace user choices
     request_data = request.get_json()
     User.replace_user(name, request_data['backgroundColor'],
@@ -41,10 +62,10 @@ def replace_user(name):  # replace user choices
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(name)
     flash('saved')
-    return response
+    return response, personalize(request_data)
 
 
-@app.route('/personalize/<string:name>', methods=['PATCH'])  # works
+@app.route('/personalize/<string:name>', methods=['PATCH'])
 def update_user(name):  # update user choices
     request_data = request.get_json()
     if 'name' in request_data:
@@ -61,43 +82,95 @@ def update_user(name):  # update user choices
         User.update_user_theme(name, request_data['theme'])
 
     response = Response("", status=204)
-    response.headers['Location'] = "/personalization/" + str(name)
+    response.headers['Location'] = "/personalize/" + str(name)
     flash('saved')
-    return response
+    return response, personalize("patch")
 
 
-@app.route('/personalize/<string:name>', methods=['DELETE'])  # works
+@app.route('/personalize/<string:name>', methods=['DELETE'])
 def delete_user(name):
     if User.delete_user(name):
         response = Response("", 201, mimetype='application/json')
         response.headers['location'] = "/personalize/" + str(name)
         flash('deleted')
-        return response
+        return response, personalize("default")
     else:
         errormessage = {
             "error": "error, could not delete choices"
         }
         response = Response(errormessage, status=400, mimetype='application/json')
-        return response
+        return response, personalize("default")
 
 
-@app.route('/personalize/')
 def personalize(data):
-    print(data)
-    _name = data['name']
-    _backgroundColor = data['backgroundColor']
-    _textColor = data['textColor']
-    _buttonColor = data['buttonColor']
-    _font = data['font']
-    _theme = data['theme']
-    # FIX_ME
-    return render_template('personalize.html',
-                           name=_name,
-                           backgroundColor=_backgroundColor,
-                           textColor=_textColor,
-                           buttonColor=_buttonColor,
-                           font=_font,
-                           theme=_theme)
+    if data == "create":  # create user
+        _name = "Default"
+        _backgroundColor = "white"
+        _textColor = "black"
+        _buttonColor = "white"
+        _font = "italic"
+        _theme = "none"
+        return render_template('personalizeCreate.html',
+                               name=_name,
+                               backgroundColor=_backgroundColor,
+                               textColor=_textColor,
+                               buttonColor=_buttonColor,
+                               font=_font,
+                               theme=_theme)
+    elif data == "default" or "delete":  # no user chosen yet, delete user
+        _name = "Default"
+        _backgroundColor = "white"
+        _textColor = "black"
+        _buttonColor = "white"
+        _font = "italic"
+        _theme = "none"
+        return render_template('personalize.html',
+                               name=_name,
+                               backgroundColor=_backgroundColor,
+                               textColor=_textColor,
+                               buttonColor=_buttonColor,
+                               font=_font,
+                               theme=_theme)
+    elif data == "patch":  # update user, replace user
+        return render_template('personalizeCreate.html')
+
+    # the rest of the options. put, post, patch
+    else:
+        print(data)
+        print(data['name'])
+        _name = data['name']
+        _backgroundColor = data['backgroundColor']
+        _textColor = data['textColor']
+        _buttonColor = data['buttonColor']
+        _font = data['font']
+        _theme = data['theme']
+        return render_template('personalize.html',
+                               name=_name,
+                               backgroundColor=_backgroundColor,
+                               textColor=_textColor,
+                               buttonColor=_buttonColor,
+                               font=_font,
+                               theme=_theme)
+
+
+def getAllUsersNames():
+    print(getAllUsers)
+
+    # print(jsonify(User.get_all_users_names()))
+    # allNames = jsonify(User.get_all_users_names())
+    # listOfNames = []
+    # for name in allNames:
+    #     oneName = allNames[name]
+    #     print(oneName)
+    #     listOfNames.append(oneName)
+    # print(listOfNames)
+
+    # return jsonify(User.get_all_users_names())
+
+
+""" Error Handling 
+    ~~~~~~~~~~~~~~
+"""
 
 
 @app.errorhandler(404)

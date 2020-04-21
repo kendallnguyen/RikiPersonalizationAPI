@@ -3,13 +3,12 @@ body {
   text-align: center;
 }
 
-input { display: none; }
+input { display: none;}
 
 #colorDisplay{
-  position: fixed;
+  position: inherit;
   border: 1px solid white;
   top: 100px;
-  left: 40%;
   width: 150px;
   height: 150px;
   display: inline-block;
@@ -17,12 +16,9 @@ input { display: none; }
 
 #colorPicker {
   border-radius: 5px;
-  padding: 0;
   height: 35px;
   width: 541px;
-  position: auto;
-  bottom: 0px;
-  margin: 0 auto;
+  position: inherit;
   background: linear-gradient(to right,
     hsla(0, 50%, 50%, 0.5),
     hsla(10, 50%, 50%, 0.5),
