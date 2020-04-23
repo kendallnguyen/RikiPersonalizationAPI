@@ -1,16 +1,6 @@
-<!DOCTYPE html>
-<html lang="en-US">
-
+{% extends "personalize.html" %}
 <head>
-{#    <link rel="stylesheet" href="/static/pygments.css">#}
-{#    <link rel="stylesheet" href="/static/responsive.css">#}
-{#    <link rel="stylesheet" href="/static/bootstrap.css">#}
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel='stylesheet' href='https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA5-1qAp5owIqrJKNhUJd8hYO99yqKKTCs'>
-    <link rel="stylesheet" href="/static/colorPicker.css">
-    <link rel="icon" href="data:,">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Personalize</title>
+{% block title %} Personalize {% endblock title %}
 </head>
 
 <body style="background-color:{{ backgroundColor }};
@@ -19,45 +9,21 @@
             font-size:20px;
             theme:{{ theme }}">
 <style>
-.button {
-  background-color: {{ buttonColor }};
-}
+    .button {
+        background-color: {{ buttonColor }};
+    }
 </style>
 
-    <div>
-    <form class="w3-container w3-half">
-        <br><br>
-        <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href ='/personalize/create/'">Create User</button>
-        <br><br>
-        <button class="button w3-button w3-round-xxlarge" type="button">Change all of my choices</button>
-        <br><br>
-        <button class="button w3-button w3-round-xxlarge" type="button">Change some of my choices</button>
-        <br><br>
-        <button class="button w3-button w3-round-xxlarge" type="button">Delete me</button>
-        <br>
+    {% block navbar %}
+    {% endblock%}
 
-    </form>
-    </div>
-
-    <div class="w3-container w3-rest">
-    <p>
-        Hello, {{ name }} <br>
-        Your current settings: <br>
-        Background Color: {{ backgroundColor }} <br>
-        Text Color: {{ textColor }} <br>
-        Button Color: {{ buttonColor }} <br>
-        Font: {{ font }} <br>
-        Theme: {{ theme }} <br>
-    </p>
-    </div>
-
-
+{% block content %}
     <div id="id02" class="w3-container">
         <button onclick="document.getElementById('id01').style.display='block'"
                 class="button w3-button w3-round-xxlarge">Open Color Picker</button>
 
         <div id="id01" class="w3-modal">
-            <div class="w3-model-content w3-animate-left w3-card-4">
+            <div class="w3-model-content w3-animate-left w3-card-4" >
                 <header class="w3-container w3-black">
                     <span onclick="document.getElementById('id01').style.display='none'"
                         class="w3-button w3-display-topright">&times;</span>
@@ -69,43 +35,36 @@
                 <p><br><br><br><br><br><br><br><br><br></p>
                 </div>
                 <footer class="w3-container w3-black">
-                    <input id="bgColor" type="button" class="w3-button w3-display-bottom" onclick="insertText('bgColorForm', );">Choose</input>
+                    <input id="bgColor" type="button" class="w3-button w3-display-bottom" onclick="">Choose</input>
                     <br><br><br>
-                    <script>
-                        function insertText(elemID, text){
-                            var elem = document.getElementById(bgColor);
-                            elem.innerHTML += text;
-                        }
-                    </script>
                 </footer>
             </div>
         </div>
     </div>
-
     <div class="w3-container">
-        <form method="post" action="/personalize/create" >
-            <label for="name"><b>FirstName</b></label>
-            <input name="name" class="w3-input w3-border" id='name' type="text">
-
-            <label id="bgColorForm" for="backgroundColor"><b>BackgroundColor</b></label>
-            <input name="backgroundColor" class="w3-input w3-border" id='backgroundColor' type="text">
-
-            <label for="textColor"><b>TextColor</b></label>
-            <input name="textColor" class="w3-input w3-border" id='textColor' type="text">
-
-            <label for="buttonColor"><b>ButtonColor</b></label>
-            <input name="buttonColor" class="w3-input w3-border" id='buttonColor' type="text">
-
-            <label for="font"><b>Font</b></label>
-            <input name="font" class="w3-input w3-border" id='font' type="text">
-
-            <label for="theme"><b>Theme</b></label>
-            <input name="theme" class="w3-input w3-border" id='theme' type="text">
-
-            <input type="submit" value="Submit" class="w3-button w3-round-xxlarge">
-        </form>
+            <p>To create a user, you must enter the name. </p>
+            <p>If you would like to use a theme,
+                put none in the field for
+                Background Color, Text Color, and Button Color</p>
+            <p>If you do not want to use a theme,
+                put none in the field for Theme, and fill out the rest
+                of the fields with your choices.</p>
+                {#  TODO: change that ^          #}
+            <p>
+                {% from "_formhelpers.html" import render_field %}
+        <form action="/personalize/create" method="POST" novalidate>
+            <dl>
+                {{ render_field(form.name) }}<br><br>
+                {{ render_field(form.backgroundColor) }} <br><br>
+                {{ render_field(form.textColor) }} <br><br>
+                {{ render_field(form.buttonColor) }}<br><br>
+                {{ render_field(form.font) }} <br><br>
+                {{ render_field(form.theme) }} <br><br>
+                {{ render_field(form.submit) }} <br><br>
+            </dl>
+          <p><input type=submit value=Register></p
     </div>
+{% endblock content %}
 <br><br><br><br>
 
 </body>
-</html>

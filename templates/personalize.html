@@ -1,72 +1,9 @@
-<!DOCTYPE html>
-<html lang="en-US">
+{% extends 'base.html' %}
 
-<head>
-{#    <link rel="stylesheet" href="/static/pygments.css">#}
-{#    <link rel="stylesheet" href="/static/responsive.css">#}
-{#    <link rel="stylesheet" href="/static/bootstrap.css">#}
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel='stylesheet' href='https://www.googleapis.com/webfonts/v1/webfonts?key=AIzaSyA5-1qAp5owIqrJKNhUJd8hYO99yqKKTCs'>
-    <link rel="stylesheet" href="/static/colorPicker.css">
-    <link rel="icon" href="data:,">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Personalize</title>
-</head>
+{% block navbar %}
+{% endblock navbar %}
 
-<body style="background-color:{{ backgroundColor }};
-            color:{{ textColor }};
-            font-family:{{ font }};
-            font-size:20px;
-            theme:{{ theme }}">
-<style>
-.button {
-  background-color: {{ buttonColor }}
-}
-</style>
-
-    <div>
-        <form class="w3-container w3-half w3-mobile">
-            <br><br>
-            <div class="w3-container">
-                <div class="w3-dropdown-hover w3-round-xxlarge w3-animate-zoom">
-                    <button class="w3-button">Find me</button>
-                    <div class="w3-dropdown-content w3-bar-block w3-border w3-animate-zoom">
-{#                        <script>#}
-                        {# get all names for the dropdown and put them each in a different link #}
-                        {#</script>#}
-
-                        <a href="/personalize/{{ name }}" class="w3-bar-item w3-button">Link 1</a>
-                        <a href="/personalize/{{ name }}" class="w3-bar-item w3-button">Link 2</a>
-                        <a href="/personalize/{{ name }}" class="w3-bar-item w3-button">Link 3</a>
-                    </div>
-                </div>
-            </div>
-            <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href = '/personalize/{{ name }}'">Create User</button>
-
-            <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href = '/personalize/create'">Create User</button>
-
-            <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href = '/personalize/{{ name }}'">Change all of my choices</button>
-
-            <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href = '/personalize/{{ name }}'">Change some of my choices</button>
-
-            <button class="button w3-button w3-round-xxlarge" type="button" onclick="window.location.href = '/personalize/'">Delete me</button>
-
-        </form>
-    </div>
-
-    <div class="w3-container w3-rest w3-mobile">
-    <p>
-        Hello, {{ name }} <br>
-        Your current settings: <br>
-        Background Color: {{ backgroundColor }} <br>
-        Text Color: {{ textColor }} <br>
-        Button Color: {{ buttonColor }} <br>
-        Font: {{ font }} <br>
-        Theme: {{ theme }} <br>
-    </p>
-    </div>
-
+{% block content %}
+{% endblock %}
 
 <br><br><br><br>
-</body>
-</html>

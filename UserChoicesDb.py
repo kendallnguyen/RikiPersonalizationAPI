@@ -32,7 +32,6 @@ class User(db.Model):
         db.session.commit()
 
     def get_all_users():
-        pass
         return [User.json(user) for user in User.query.all()]
 
     def get_all_users_names():

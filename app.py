@@ -1,59 +1,127 @@
-from flask import request, jsonify, Response, redirect, flash, render_template
+from flask import request, jsonify, Response, redirect, flash, render_template, json, make_response, Blueprint
 from UserChoicesDb import User
 from settings import app
+from forms import preferences
+
+bp = Blueprint(__name__, 'bp')
+
 
 app.config['SECRET_KEY'] = 'meow'
 
+"""
+Default values for the following pages 
+'/personalize/'
+'/personalize/create'
+'/personalize/delete' 
 
-@app.route('/')  # works
+"""
+_name = "Default"
+_backgroundColor = "white"
+_textColor = "black"
+_buttonColor = "white"
+_font = "italic"
+_theme = "none"
+
+
+""" 
+Home. Redirects to Personalize home
+"""
+
+
+@bp.route('/')  # works
 def helloWorld():
-    return "Hello, world. Go to this webpage /personalize/"
+    return redirect('/personalize/')
 
 
-def getDefaultUser():
-    name = "default"
-    return User.get_user(name)
+"""
+A json page showing all users in the database. 
+Not linked on page.
+"""
 
 
-@app.route('/personalize/allusers')  # works
+@bp.route('/personalize/allusers')  # works
 def getAllUsers():
     print({'users': User.get_all_users()})
     return jsonify({'users': User.get_all_users()})
 
 
-@app.route('/personalize/')
+"""
+Personalize Home
+"""
+
+
+@bp.route('/personalize/')
 def home():
-    # getAllUsersNames()
-    return personalize("default")
+    return render_template('base.html',
+                           name=_name,
+                           backgroundColor=_backgroundColor,
+                           textColor=_textColor,
+                           buttonColor=_buttonColor,
+                           font=_font,
+                           theme=_theme)
 
 
-@app.route('/personalize/<string:name>')
-def get_users(name):  # get users choices
+"""
+Users page with their preferences loaded
+"""
+
+
+@bp.route('/personalize/<string:name>')
+def get_users(name):  # get users choices and page
     return_value = User.get_user(name)
+    form = preferences()
     print(return_value)
-    return personalize(return_value)
+    return render_template('personalizeUsersPage.html',
+                           form=form,
+                           name=name,
+                           backgroundColor=return_value['backgroundColor'],
+                           textColor=return_value['textColor'],
+                           buttonColor=return_value['buttonColor'],
+                           font=return_value['font'],
+                           theme=return_value['theme']
+                           )
 
 
-@app.route('/personalize/create')
-def load_create_page():
-    return personalize("create")
+"""
+Create user page
+"""
 
 
-@app.route('/personalize/create', methods=['POST'])
+@bp.route('/personalize/create', methods=['GET', 'POST'])
 def create_user():  # make new user
-    request_data = request.get_json()
-    print(request_data)
-    User.add_user(request_data['name'], request_data['backgroundColor'],
-                  request_data['textColor'], request_data['buttonColor'],
-                  request_data['font'], request_data['theme'])
-    response = Response("", 201, mimetype='application/json')
-    response.headers['location'] = "/personalize/" + str(request_data['name'])
-    flash('saved')
-    return response, personalize(request_data),  # redirect(
-    # "/personalize/" + str(request_data['name']))  # , personalize(getDefaultUser())
+    form = preferences(request.form)
+    if request.method == 'POST' and form.validate():
+        print(request)
+        print(jsonify(request))
+        request_headers = request.headers
+        print(request_headers)
+        request_data = request.get_json()
+        # jsonify(request_data)
+        print(request_data)
+        User.add_user(request_data['name'], request_data['backgroundColor'],
+                      request_data['textColor'], request_data['buttonColor'],
+                      request_data['font'], request_data['theme'])
+        response = Response("", 201, mimetype='application/json')
+        response.headers['location'] = "/personalize/" + str(request_data['name'])
+        flash('saved')
+        return response, redirect("/personalize/" + str(request_data['name']))
+    return render_template('personalizeCreate.html',
+                           form=form,
+                           name=_name,
+                           backgroundColor=_backgroundColor,
+                           textColor=_textColor,
+                           buttonColor=_buttonColor,
+                           font=_font,
+                           theme=_theme,
+                           )
 
 
-@app.route('/personalize/<string:name>', methods=['PUT'])
+"""
+Users page, put request. Replaces all fields. 
+"""
+
+
+@bp.route('/personalize/<string:name>', methods=['PUT'])
 def replace_user(name):  # replace user choices
     request_data = request.get_json()
     User.replace_user(name, request_data['backgroundColor'],
@@ -62,10 +130,21 @@ def replace_user(name):  # replace user choices
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(name)
     flash('saved')
-    return response, personalize(request_data)
+    return response, render_template('personalizeUsersPage.html',
+                                     name=_name,
+                                     backgroundColor=_backgroundColor,
+                                     textColor=_textColor,
+                                     buttonColor=_buttonColor,
+                                     font=_font,
+                                     theme=_theme)
 
 
-@app.route('/personalize/<string:name>', methods=['PATCH'])
+"""
+Users page, patch request. Updates user choices
+"""
+
+
+@bp.route('/personalize/<string:name>', methods=['PATCH'])
 def update_user(name):  # update user choices
     request_data = request.get_json()
     if 'name' in request_data:
@@ -84,73 +163,53 @@ def update_user(name):  # update user choices
     response = Response("", status=204)
     response.headers['Location'] = "/personalize/" + str(name)
     flash('saved')
-    return response, personalize("patch")
+    return response, render_template('personalizeUsersPage.html',
+                                     name=_name,
+                                     backgroundColor=_backgroundColor,
+                                     textColor=_textColor,
+                                     buttonColor=_buttonColor,
+                                     font=_font,
+                                     theme=_theme)
 
 
-@app.route('/personalize/<string:name>', methods=['DELETE'])
+"""
+Users page, delete request. Removes user from database.
+"""
+
+
+@bp.route('/personalize/<string:name>', methods=['DELETE'])
 def delete_user(name):
     if User.delete_user(name):
         response = Response("", 201, mimetype='application/json')
         response.headers['location'] = "/personalize/" + str(name)
         flash('deleted')
-        return response, personalize("default")
+        return response, render_template('personalize.html',
+                                         name=_name,
+                                         backgroundColor=_backgroundColor,
+                                         textColor=_textColor,
+                                         buttonColor=_buttonColor,
+                                         font=_font,
+                                         theme=_theme)
     else:
         errormessage = {
             "error": "error, could not delete choices"
         }
         response = Response(errormessage, status=400, mimetype='application/json')
-        return response, personalize("default")
+        return response, render_template('personalize.html',
+                                         name=_name,
+                                         backgroundColor=_backgroundColor,
+                                         textColor=_textColor,
+                                         buttonColor=_buttonColor,
+                                         font=_font,
+                                         theme=_theme)
 
 
-def personalize(data):
-    if data == "create":  # create user
-        _name = "Default"
-        _backgroundColor = "white"
-        _textColor = "black"
-        _buttonColor = "white"
-        _font = "italic"
-        _theme = "none"
-        return render_template('personalizeCreate.html',
-                               name=_name,
-                               backgroundColor=_backgroundColor,
-                               textColor=_textColor,
-                               buttonColor=_buttonColor,
-                               font=_font,
-                               theme=_theme)
-    elif data == "default" or "delete":  # no user chosen yet, delete user
-        _name = "Default"
-        _backgroundColor = "white"
-        _textColor = "black"
-        _buttonColor = "white"
-        _font = "italic"
-        _theme = "none"
-        return render_template('personalize.html',
-                               name=_name,
-                               backgroundColor=_backgroundColor,
-                               textColor=_textColor,
-                               buttonColor=_buttonColor,
-                               font=_font,
-                               theme=_theme)
-    elif data == "patch":  # update user, replace user
-        return render_template('personalizeCreate.html')
-
-    # the rest of the options. put, post, patch
-    else:
-        print(data)
-        print(data['name'])
-        _name = data['name']
-        _backgroundColor = data['backgroundColor']
-        _textColor = data['textColor']
-        _buttonColor = data['buttonColor']
-        _font = data['font']
-        _theme = data['theme']
-        return render_template('personalize.html',
-                               name=_name,
-                               backgroundColor=_backgroundColor,
-                               textColor=_textColor,
-                               buttonColor=_buttonColor,
-                               font=_font,
-                               theme=_theme)
+"""
+Gets all users, gets all names from those users, 
+and returns a list of the names.
+For use in the nav bar item 'Find Me' 
+which shows a link to every user in the database's page.
+"""
 
 
 def getAllUsersNames():
@@ -173,10 +232,12 @@ def getAllUsersNames():
 """
 
 
-@app.errorhandler(404)
+@bp.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
 
+
+app.register_blueprint(bp)
 
 if __name__ == '__main__':
     app.run(port=80, debug=True)
