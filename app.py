@@ -1,19 +1,20 @@
-from flask import request, jsonify, Response, redirect, flash, render_template, json, make_response, Blueprint
+from flask import request, jsonify, Response, redirect, flash, render_template, Blueprint
+from flask_wtf import FlaskForm
+
 from UserChoicesDb import User
-from settings import app
 from forms import preferences
+from settings import app
 
 bp = Blueprint(__name__, 'bp')
-
 
 app.config['SECRET_KEY'] = 'meow'
 
 """
-Default values for the following pages 
+Default values for the following pages: 
 '/personalize/'
 '/personalize/create'
 '/personalize/delete' 
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 _name = "Default"
 _backgroundColor = "white"
@@ -22,13 +23,12 @@ _buttonColor = "white"
 _font = "italic"
 _theme = "none"
 
-
 """ 
 Home. Redirects to Personalize home
 """
 
 
-@bp.route('/')  # works
+@bp.route('/')
 def helloWorld():
     return redirect('/personalize/')
 
@@ -36,10 +36,11 @@ def helloWorld():
 """
 A json page showing all users in the database. 
 Not linked on page.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
-@bp.route('/personalize/allusers')  # works
+@bp.route('/personalize/allusers')
 def getAllUsers():
     print({'users': User.get_all_users()})
     return jsonify({'users': User.get_all_users()})
@@ -47,22 +48,30 @@ def getAllUsers():
 
 """
 Personalize Home
+~~~~~~~~~~~~~~~~
 """
 
 
 @bp.route('/personalize/')
 def home():
+    nameslist = User.get_all_users_names()
+    length = len(nameslist)
+    # for n in range(length):
+    #     print(nameslist[n])
     return render_template('base.html',
                            name=_name,
                            backgroundColor=_backgroundColor,
                            textColor=_textColor,
                            buttonColor=_buttonColor,
                            font=_font,
-                           theme=_theme)
+                           theme=_theme,
+                           namelist=nameslist,
+                           length=length)
 
 
 """
 Users page with their preferences loaded
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
@@ -78,21 +87,33 @@ def get_users(name):  # get users choices and page
                            textColor=return_value['textColor'],
                            buttonColor=return_value['buttonColor'],
                            font=return_value['font'],
-                           theme=return_value['theme']
-                           )
+                           theme=return_value['theme'])
 
 
 """
 Create user page
+~~~~~~~~~~~~~~~~
 """
 
 
-@bp.route('/personalize/create', methods=['GET', 'POST'])
+@bp.route('/personalize/create', methods=['GET'])
+def load_create_user():
+    form = preferences(FlaskForm)
+    return render_template('personalizeCreate.html',
+                           form=form,
+                           name=_name,
+                           backgroundColor=_backgroundColor,
+                           textColor=_textColor,
+                           buttonColor=_buttonColor,
+                           font=_font,
+                           theme=_theme)
+
+
+@bp.route('/personalize/create', methods=['POST'])
 def create_user():  # make new user
     form = preferences(request.form)
     if request.method == 'POST' and form.validate():
         print(request)
-        print(jsonify(request))
         request_headers = request.headers
         print(request_headers)
         request_data = request.get_json()
@@ -105,19 +126,20 @@ def create_user():  # make new user
         response.headers['location'] = "/personalize/" + str(request_data['name'])
         flash('saved')
         return response, redirect("/personalize/" + str(request_data['name']))
-    return render_template('personalizeCreate.html',
-                           form=form,
-                           name=_name,
-                           backgroundColor=_backgroundColor,
-                           textColor=_textColor,
-                           buttonColor=_buttonColor,
-                           font=_font,
-                           theme=_theme,
-                           )
+    else:
+        return render_template('personalizeCreate.html',
+                               form=form,
+                               name=_name,
+                               backgroundColor=_backgroundColor,
+                               textColor=_textColor,
+                               buttonColor=_buttonColor,
+                               font=_font,
+                               theme=_theme)
 
 
 """
 Users page, put request. Replaces all fields. 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
@@ -141,6 +163,7 @@ def replace_user(name):  # replace user choices
 
 """
 Users page, patch request. Updates user choices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
@@ -174,6 +197,7 @@ def update_user(name):  # update user choices
 
 """
 Users page, delete request. Removes user from database.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
@@ -209,11 +233,15 @@ Gets all users, gets all names from those users,
 and returns a list of the names.
 For use in the nav bar item 'Find Me' 
 which shows a link to every user in the database's page.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
 
 
 def getAllUsersNames():
-    print(getAllUsers)
+    namelist = User.get_all_users_names()
+    print(namelist)
+    return namelist
+
 
     # print(jsonify(User.get_all_users_names()))
     # allNames = jsonify(User.get_all_users_names())
@@ -227,8 +255,9 @@ def getAllUsersNames():
     # return jsonify(User.get_all_users_names())
 
 
-""" Error Handling 
-    ~~~~~~~~~~~~~~
+"""
+Error Handling 
+~~~~~~~~~~~~~~
 """
 
 

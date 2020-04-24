@@ -35,12 +35,14 @@ class User(db.Model):
         return [User.json(user) for user in User.query.all()]
 
     def get_all_users_names():
-        pass
-        # allUsers = User.get_all_users()
-        # print(allUsers)
-        # for user in allUsers:
-        #     User.json(User.query.filter_by(name=user['name']))
-        #     return user['name']
+        nameslist = []
+        allusers = [User.json(user) for user in User.query.all()]
+        print(allusers)
+        for item in allusers:
+            onename = item['name']
+            nameslist.append(onename)
+        print(nameslist)
+        return nameslist
 
     def get_user(_name):
         return User.json(User.query.filter_by(name=_name).first())

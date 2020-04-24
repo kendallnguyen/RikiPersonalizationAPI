@@ -25,13 +25,15 @@
 
     <div class="w3-bar w3-black w3-card-4 w3-mobile">
         <a href="/personalize/" class="w3-bar-item w3-button w3-animate-zoom">Home</a>
-        <a href="#" class="w3-bar-item w3-button w3-animate-zoom w3-dropdown-hover">Find Me</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 1</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 1</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 2</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 3</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 4</a>
-            <a href="#" class="w3-dropdown-content w3-button w3-green">Name 5</a>
+        <div class="w3-dropdown-hover">
+            <a href="#" class="w3-bar-item w3-button w3-animate-zoom w3-dropdown-hover w3-hover-yellow">Find Me</a>
+                <div class="w3-dropdown-content w3-button">
+                    {% for name in namelist %}
+                        <button href="/personalize/{{ name|safe }}" class="w3-dropdown-content w3-button">{{ name|safe }}</button>
+                    {% endfor %}
+                </div>
+                <a href="/personalize/Kendall" class="w3-dropdown-content w3-button">Kendall</a>
+        </div>
         <a href="/personalize/create" class="w3-bar-item w3-button w3-animate-zoom">Create User</a>
         {% block navbar %}{% endblock navbar %}
     </div>

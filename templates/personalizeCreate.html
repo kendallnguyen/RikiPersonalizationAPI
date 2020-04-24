@@ -52,7 +52,7 @@
                 {#  TODO: change that ^          #}
             <p>
                 {% from "_formhelpers.html" import render_field %}
-        <form action="/personalize/create" method="POST" novalidate>
+        <form action="/personalize/create" enctype="multipart/form-data" method="POST" novalidate>
             <dl>
                 {{ render_field(form.name) }}<br><br>
                 {{ render_field(form.backgroundColor) }} <br><br>
@@ -62,7 +62,7 @@
                 {{ render_field(form.theme) }} <br><br>
                 {{ render_field(form.submit) }} <br><br>
             </dl>
-          <p><input type=submit value=Register></p
+          <p><input type=submit value=Register></p>
     </div>
 {% endblock content %}
 <br><br><br><br>
