@@ -16,6 +16,7 @@ Default values for the following pages:
 '/personalize/delete' 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 """
+
 _name = "Default"
 _backgroundColor = "white"
 _textColor = "black"
@@ -80,7 +81,7 @@ def get_users(name):  # get users choices and page
     return_value = User.get_user(name)
     form = preferences()
     print(return_value)
-    return render_template('personalizeUsersPage.html',
+    return render_template('usersPage.html',
                            form=form,
                            name=name,
                            backgroundColor=return_value['backgroundColor'],
@@ -98,8 +99,8 @@ Create user page
 
 @bp.route('/personalize/create', methods=['GET'])
 def load_create_user():
-    form = preferences(FlaskForm)
-    return render_template('personalizeCreate.html',
+    form = preferences()
+    return render_template('create.html',
                            form=form,
                            name=_name,
                            backgroundColor=_backgroundColor,
@@ -127,7 +128,7 @@ def create_user():  # make new user
         flash('saved')
         return response, redirect("/personalize/" + str(request_data['name']))
     else:
-        return render_template('personalizeCreate.html',
+        return render_template('usersPage.html',
                                form=form,
                                name=_name,
                                backgroundColor=_backgroundColor,
@@ -152,7 +153,7 @@ def replace_user(name):  # replace user choices
     response = Response("", 201, mimetype='application/json')
     response.headers['location'] = "/personalize/" + str(name)
     flash('saved')
-    return response, render_template('personalizeUsersPage.html',
+    return response, render_template('usersPage.html',
                                      name=_name,
                                      backgroundColor=_backgroundColor,
                                      textColor=_textColor,
@@ -186,7 +187,7 @@ def update_user(name):  # update user choices
     response = Response("", status=204)
     response.headers['Location'] = "/personalize/" + str(name)
     flash('saved')
-    return response, render_template('personalizeUsersPage.html',
+    return response, render_template('usersPage.html',
                                      name=_name,
                                      backgroundColor=_backgroundColor,
                                      textColor=_textColor,
@@ -207,7 +208,7 @@ def delete_user(name):
         response = Response("", 201, mimetype='application/json')
         response.headers['location'] = "/personalize/" + str(name)
         flash('deleted')
-        return response, render_template('personalize.html',
+        return response, render_template('base.html',
                                          name=_name,
                                          backgroundColor=_backgroundColor,
                                          textColor=_textColor,
@@ -219,7 +220,7 @@ def delete_user(name):
             "error": "error, could not delete choices"
         }
         response = Response(errormessage, status=400, mimetype='application/json')
-        return response, render_template('personalize.html',
+        return response, render_template('base.html',
                                          name=_name,
                                          backgroundColor=_backgroundColor,
                                          textColor=_textColor,
@@ -241,7 +242,6 @@ def getAllUsersNames():
     namelist = User.get_all_users_names()
     print(namelist)
     return namelist
-
 
     # print(jsonify(User.get_all_users_names()))
     # allNames = jsonify(User.get_all_users_names())

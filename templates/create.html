@@ -1,5 +1,5 @@
-{% extends "personalize.html" %}
-<head>
+{% extends "base.html" %}
+<head xmlns="http://www.w3.org/1999/html">
 {% block title %} Personalize {% endblock title %}
 </head>
 
@@ -52,7 +52,7 @@
                 {#  TODO: change that ^          #}
             <p>
                 {% from "_formhelpers.html" import render_field %}
-        <form action="/personalize/create" enctype="multipart/form-data" method="POST" novalidate>
+        <form method="POST" novalidate>
             <dl>
                 {{ render_field(form.name) }}<br><br>
                 {{ render_field(form.backgroundColor) }} <br><br>
@@ -63,6 +63,7 @@
                 {{ render_field(form.submit) }} <br><br>
             </dl>
           <p><input type=submit value=Register></p>
+		</form>
     </div>
 {% endblock content %}
 <br><br><br><br>

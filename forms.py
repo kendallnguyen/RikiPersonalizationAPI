@@ -5,10 +5,10 @@ from wtforms.validators import InputRequired, Required
 
 
 class preferences(FlaskForm):
-    name = StringField('')
-    backgroundColor = StringField('')
-    textColor = StringField('')
-    buttonColor = StringField('')
-    font = StringField('')
-    theme = StringField('')
-    submit = SubmitField('')
+    name = StringField('Name')
+    backgroundColor = StringField('backgroundColor')
+    textColor = StringField('textColor')
+    buttonColor = StringField('buttonColor')
+    font = StringField('font')
+    theme = StringField('theme')
+    submit = SubmitField('Submit')
