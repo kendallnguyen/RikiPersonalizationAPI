@@ -1,6 +1,5 @@
 from flask import request, jsonify, Response, redirect, flash, render_template, Blueprint
-from flask_wtf import FlaskForm
-from logging.config import dictConfig
+
 from UserChoicesDb import User
 from forms import preferences
 from settings import app
@@ -269,17 +268,6 @@ def getAllUsersNames():
     return namelist
 
 
-# print(jsonify(User.get_all_users_names()))
-# allNames = jsonify(User.get_all_users_names())
-# listOfNames = []
-# for name in allNames:
-#     oneName = allNames[name]
-#     print(oneName)
-#     listOfNames.append(oneName)
-# print(listOfNames)
-
-# return jsonify(User.get_all_users_names())
-
 
 """
 Error Handling 
@@ -296,4 +284,4 @@ def page_not_found(error):
 app.register_blueprint(bp)
 
 if __name__ == '__main__':
-    app.run(port=80, debug=True)
+    app.run(host='0.0.0.0', port=5000)

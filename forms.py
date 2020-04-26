@@ -1,7 +1,7 @@
-from flask_wtf import FlaskForm, validators, Form
+from flask_wtf import FlaskForm
 
-from wtforms import StringField, BooleanField, SubmitField, TextField, Field, HiddenField, RadioField
-from wtforms.validators import DataRequired, InputRequired, Optional, Length, ValidationError
+from wtforms import StringField, SubmitField, RadioField
+from wtforms.validators import InputRequired
 
 
 class preferences(FlaskForm):
