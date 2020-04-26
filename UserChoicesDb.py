@@ -13,21 +13,19 @@ class User(db.Model):
     textColor = db.Column(db.String(80))
     buttonColor = db.Column(db.String(80))
     font = db.Column(db.String(80))
-    theme = db.Column(db.String(80))
 
     def json(self):
         return {'name': self.name,
                 'backgroundColor': self.backgroundColor,
                 'textColor': self.textColor,
                 'buttonColor': self.buttonColor,
-                'font': self.font,
-                'theme': self.theme}
+                'font': self.font}
 
     def add_user(_name, _backgroundColor, _textColor,
-                 _buttonColor, _font, _theme):
+                 _buttonColor, _font,):
         new_user = User(name=_name, backgroundColor=_backgroundColor,
                         textColor=_textColor, buttonColor=_buttonColor,
-                        font=_font, theme=_theme)
+                        font=_font)
         db.session.add(new_user)
         db.session.commit()
 
@@ -77,19 +75,13 @@ class User(db.Model):
         user_to_update.font = _font
         db.session.commit()
 
-    def update_user_theme(_name, _theme):
-        user_to_update = User.query.filter_by(name=_name).first()
-        user_to_update.theme = _theme
-        db.session.commit()
-
     def replace_user(_name, _backgroundColor, _textColor,
-                     _buttonColor, _font, _theme):
+                     _buttonColor, _font):
         user_to_replace = User.query.filter_by(name=_name).first()
         user_to_replace.backgroundColor = _backgroundColor
         user_to_replace.textColor = _textColor
         user_to_replace.buttonColor = _buttonColor
         user_to_replace.font = _font
-        user_to_replace.theme = _theme
         db.session.commit()
 
     def __repr__(self):
@@ -98,7 +90,6 @@ class User(db.Model):
             'background-color': self.backgroundColor,
             'text-color': self.textColor,
             'button-color': self.buttonColor,
-            'font': self.font,
-            'theme': self.theme
+            'font': self.font
         }
         return json.dumps(user_object)
